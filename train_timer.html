@@ -1,0 +1,531 @@
+html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>无畏契约 · 三段练枪计划（手机版）</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            background: radial-gradient(circle at 20% 30%, #0b1120, #03060f);
+            font-family: system-ui, -apple-system, 'Segoe UI', Helvetica, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 16px;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(12, 20, 30, 0.75);
+            backdrop-filter: blur(20px);
+            border-radius: 56px;
+            padding: 1.5rem 1.2rem 1.8rem;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 0 0 0.2rem;
+            text-align: center;
+            background: linear-gradient(135deg, #e2e9ff, #a0c0ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .sub {
+            text-align: center;
+            color: #8d9fc7;
+            font-size: 0.7rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px dashed #2a3a55;
+            display: inline-block;
+            width: auto;
+            padding: 0 10px 6px;
+        }
+        .phase-card {
+            background: #0a101ccc;
+            border-radius: 48px;
+            padding: 1.2rem 1rem;
+            margin: 1rem 0;
+            text-align: center;
+            box-shadow: inset 0 0 6px rgba(0,0,0,0.4), 0 8px 20px rgba(0,0,0,0.3);
+        }
+        .phase-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #fff, #badaff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .timer {
+            font-size: 4.2rem;
+            font-weight: 800;
+            font-family: 'Courier New', monospace;
+            background: #00000066;
+            padding: 0.2rem 0.6rem;
+            border-radius: 50px;
+            display: inline-block;
+            letter-spacing: 4px;
+            color: #f2f6ff;
+            text-shadow: 0 0 10px #3d8eff;
+            margin: 0.3rem 0;
+        }
+        .progress {
+            display: flex;
+            justify-content: space-between;
+            margin: 18px 0 12px;
+            gap: 6px;
+        }
+        .progress-step {
+            flex: 1;
+            text-align: center;
+            background: #0c1222cc;
+            padding: 8px 2px;
+            border-radius: 32px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            transition: 0.1s;
+            color: #9aadcf;
+            border: 1px solid #2a3850;
+        }
+        .progress-step.active {
+            background: #1e4a76;
+            color: white;
+            box-shadow: 0 0 8px #2f7eb6;
+            border-color: #7ab3d0;
+        }
+        .progress-step.completed {
+            background: #1f6d43;
+            color: #d4ffd4;
+            border-color: #54b07c;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin: 20px 0 16px;
+        }
+        button {
+            background: #1e2f3c;
+            border: none;
+            font-weight: bold;
+            padding: 12px 18px;
+            border-radius: 60px;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.05s linear;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            font-family: inherit;
+            flex: 1;
+            min-width: 70px;
+        }
+        button:active {
+            transform: scale(0.96);
+        }
+        .btn-start {
+            background: #0f6b4a;
+            box-shadow: 0 0 8px #22aa77;
+        }
+        .btn-pause {
+            background: #b9762c;
+        }
+        .btn-reset {
+            background: #5f3b2c;
+        }
+        .btn-skip {
+            background: #2c4f6b;
+        }
+        .status-badge {
+            background: #00000066;
+            border-radius: 60px;
+            padding: 6px 16px;
+            font-size: 0.7rem;
+            display: inline-block;
+            margin-top: 6px;
+        }
+        .log-area {
+            margin-top: 20px;
+            background: #03070f99;
+            border-radius: 28px;
+            padding: 10px;
+            font-size: 0.7rem;
+            max-height: 140px;
+            overflow-y: auto;
+            font-family: monospace;
+        }
+        .log-line {
+            border-bottom: 1px solid #2a3650;
+            padding: 5px 6px;
+            color: #b8caee;
+        }
+        .footer {
+            font-size: 0.6rem;
+            text-align: center;
+            margin-top: 16px;
+            color: #5f73a1;
+        }
+        .blink {
+            animation: pulse 0.8s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; text-shadow: 0 0 0 red; }
+            100% { opacity: 0.7; text-shadow: 0 0 12px #ff4d4d; }
+        }
+        /* 手机大按钮区域 */
+        @media (max-width: 480px) {
+            .container { padding: 1rem 0.8rem 1.2rem; }
+            .timer { font-size: 3.6rem; letter-spacing: 2px; }
+            .phase-name { font-size: 1.5rem; }
+            button { padding: 10px 12px; font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🔫 无畏契约 · 专项训练</h1>
+    <div style="text-align: center;"><span class="sub">复位练习 | 三目标 | 闪身枪  各10分钟 自动连播</span></div>
+
+    <div class="phase-card">
+        <div class="phase-name" id="phaseName">复位练习</div>
+        <div class="timer" id="timerDisplay">10:00</div>
+        <div class="status-badge" id="statusText">⚡ 就绪，点击开始</div>
+    </div>
+
+    <div class="progress">
+        <div class="progress-step" id="step1">1. 复位练习<br><span style="font-size:0.6rem;">10min</span></div>
+        <div class="progress-step" id="step2">2. 三目标<br><span style="font-size:0.6rem;">10min</span></div>
+        <div class="progress-step" id="step3">3. 闪身枪<br><span style="font-size:0.6rem;">10min</span></div>
+    </div>
+
+    <div class="controls">
+        <button id="startBtn" class="btn-start">▶ 开始</button>
+        <button id="pauseBtn" class="btn-pause">⏸ 暂停</button>
+        <button id="resetBtn" class="btn-reset">🔄 重置</button>
+        <button id="skipBtn" class="btn-skip">⏩ 跳过</button>
+    </div>
+
+    <div class="log-area" id="logArea">
+        <div class="log-line">📌 训练计划: 复位练习(10min) → 三目标(10min) → 闪身枪(10min)</div>
+        <div class="log-line">✨ 自动计时，每阶段结束蜂鸣提醒</div>
+        <div class="log-line">🔆 屏幕常亮已启用（点开始后激活）</div>
+    </div>
+    <div class="footer">
+        💡 提示：开始训练后屏幕将保持常亮<br>
+        🔔 首次点击页面任意按钮可开启声音
+    </div>
+</div>
+
+<script>
+    // ==================== 训练阶段配置 ====================
+    const PHASES = [
+        { name: "复位练习", durationSec: 10 * 60, original: 10 * 60 },
+        { name: "三目标", durationSec: 10 * 60, original: 10 * 60 },
+        { name: "闪身枪", durationSec: 10 * 60, original: 10 * 60 }
+    ];
+    let currentPhaseIndex = 0;
+    let timeLeft = PHASES[0].durationSec;
+    let isRunning = false;
+    let isTrainingActive = false;
+    let timerInterval = null;
+
+    // DOM 元素
+    const phaseNameEl = document.getElementById('phaseName');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const statusText = document.getElementById('statusText');
+    const startBtn = document.getElementById('startBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const skipBtn = document.getElementById('skipBtn');
+    const logArea = document.getElementById('logArea');
+    const step1El = document.getElementById('step1');
+    const step2El = document.getElementById('step2');
+    const step3El = document.getElementById('step3');
+
+    // ==================== 蜂鸣 + 振动 ====================
+    let audioCtx = null;
+    function beep(frequency = 880, duration = 200, volume = 0.25) {
+        try {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            const ctx = audioCtx;
+            const gain = ctx.createGain();
+            const osc = ctx.createOscillator();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = frequency;
+            gain.gain.value = volume;
+            osc.type = 'sine';
+            osc.start();
+            gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + duration / 1000);
+            osc.stop(ctx.currentTime + duration / 1000);
+            if (ctx.state === 'suspended') ctx.resume();
+        } catch(e) { console.warn("beep error", e); }
+    }
+
+    // 振动（手机）
+    function vibrate(pattern) {
+        if (window.navigator && window.navigator.vibrate) {
+            window.navigator.vibrate(pattern);
+        }
+    }
+
+    function playPhaseEndAlert() {
+        beep(880, 250);
+        setTimeout(() => beep(880, 250), 280);
+        setTimeout(() => beep(660, 300), 600);
+        vibrate([200, 100, 200]);
+        if (Notification.permission === 'granted') {
+            new Notification('✅ 阶段完成', { body: `${PHASES[currentPhaseIndex].name} 结束，进入下一阶段` });
+        } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission();
+        }
+    }
+
+    function playAllCompleteAlert() {
+        beep(880, 300);
+        setTimeout(() => beep(1046, 400), 380);
+        setTimeout(() => beep(1318, 500), 800);
+        vibrate([300, 150, 300, 150, 500]);
+        if (Notification.permission === 'granted') {
+            new Notification('🏆 恭喜！全部训练完成', { body: '复位+三目标+闪身枪 已完成！' });
+        }
+    }
+
+    // ==================== 屏幕常亮 (Wake Lock) ====================
+    let wakeLock = null;
+    async function requestWakeLock() {
+        if ('wakeLock' in navigator) {
+            try {
+                wakeLock = await navigator.wakeLock.request('screen');
+                console.log('屏幕常亮已激活');
+                // 页面可见性变化时重新获取锁
+                document.addEventListener('visibilitychange', async () => {
+                    if (document.visibilityState === 'visible' && wakeLock === null) {
+                        await requestWakeLock();
+                    }
+                });
+            } catch (err) {
+                console.warn('常亮请求失败:', err);
+                addLog('⚠️ 屏幕常亮不支持或权限不足，请手动设置屏幕常亮');
+            }
+        } else {
+            console.log('当前浏览器不支持 Wake Lock API');
+            addLog('⚠️ 当前浏览器不支持常亮API，请手动设置手机永不锁屏');
+        }
+    }
+
+    function releaseWakeLock() {
+        if (wakeLock !== null) {
+            wakeLock.release().then(() => {
+                wakeLock = null;
+                console.log('屏幕常亮已释放');
+            });
+        }
+    }
+
+    // ==================== UI 更新 ====================
+    function updateUI() {
+        const mins = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+        timerDisplay.textContent = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+        phaseNameEl.textContent = PHASES[currentPhaseIndex].name;
+
+        [step1El, step2El, step3El].forEach((el, idx) => {
+            el.classList.remove('active', 'completed');
+            if (idx < currentPhaseIndex) el.classList.add('completed');
+            else if (idx === currentPhaseIndex && isTrainingActive && isRunning) el.classList.add('active');
+            else if (idx === currentPhaseIndex && isTrainingActive && !isRunning) el.classList.add('active');
+        });
+        if (isTrainingActive && !isRunning) statusText.innerText = '⏸ 已暂停';
+        else if (isTrainingActive && isRunning) statusText.innerText = '🏃 训练进行中 ...';
+        else if (!isTrainingActive && currentPhaseIndex === 0 && timeLeft === PHASES[0].durationSec) statusText.innerText = '⚡ 就绪，点击开始';
+        else if (!isTrainingActive && currentPhaseIndex >= PHASES.length) statusText.innerText = '🎉 全部完成！重置可重新开始';
+        else if (!isTrainingActive && currentPhaseIndex < PHASES.length) statusText.innerText = '⏹️ 已停止，点重置';
+    }
+
+    // ==================== 核心计时器 ====================
+    function tick() {
+        if (!isRunning || !isTrainingActive) return;
+        if (timeLeft <= 0) {
+            // 阶段结束
+            isRunning = false;
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = null;
+            playPhaseEndAlert();
+            addLog(`✅ 完成阶段: ${PHASES[currentPhaseIndex].name}`);
+
+            if (currentPhaseIndex + 1 < PHASES.length) {
+                currentPhaseIndex++;
+                timeLeft = PHASES[currentPhaseIndex].durationSec;
+                updateUI();
+                if (isTrainingActive) startTimerInternal();
+            } else {
+                // 全部结束
+                isTrainingActive = false;
+                isRunning = false;
+                if (timerInterval) clearInterval(timerInterval);
+                timerInterval = null;
+                updateUI();
+                playAllCompleteAlert();
+                addLog(`🏁 全部训练完成！ 总时长30分钟。`);
+                statusText.innerText = '🎉 大胜利！重置可再次训练';
+                releaseWakeLock();  // 训练结束释放常亮
+            }
+        } else {
+            if (timeLeft === 10 && isRunning) {
+                beep(660, 100, 0.12);
+                vibrate(50);
+            }
+            timeLeft--;
+            updateUI();
+            if (timeLeft <= 5 && timeLeft > 0) {
+                timerDisplay.classList.add('blink');
+            } else {
+                timerDisplay.classList.remove('blink');
+            }
+        }
+    }
+
+    function startTimerInternal() {
+        if (timerInterval) clearInterval(timerInterval);
+        if (!isTrainingActive) return;
+        isRunning = true;
+        timerInterval = setInterval(() => tick(), 1000);
+        updateUI();
+    }
+
+    // ==================== 公共控制 ====================
+    function startTraining() {
+        if (isTrainingActive && isRunning) return;
+        if (currentPhaseIndex >= PHASES.length) resetTraining();
+        if (!isTrainingActive) {
+            isTrainingActive = true;
+            if (currentPhaseIndex >= PHASES.length) currentPhaseIndex = 0;
+            if (timeLeft <= 0 || timeLeft > PHASES[currentPhaseIndex].durationSec) {
+                timeLeft = PHASES[currentPhaseIndex].durationSec;
+            }
+            startTimerInternal();
+            requestWakeLock();   // 开始训练 → 请求常亮
+        } else {
+            if (!isRunning && isTrainingActive) {
+                startTimerInternal();
+            }
+        }
+        updateUI();
+    }
+
+    function pauseTraining() {
+        if (!isTrainingActive) return;
+        if (isRunning) {
+            isRunning = false;
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            updateUI();
+            addLog(`⏸ 暂停于 ${PHASES[currentPhaseIndex].name} 剩余 ${formatTime(timeLeft)}`);
+        }
+    }
+
+    function resetTraining() {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = null;
+        isRunning = false;
+        isTrainingActive = false;
+        currentPhaseIndex = 0;
+        timeLeft = PHASES[0].durationSec;
+        updateUI();
+        timerDisplay.classList.remove('blink');
+        addLog(`🔄 重置训练计划，回到初始状态`);
+        statusText.innerText = '⚡ 已重置，点击开始';
+        releaseWakeLock();  // 重置时释放常亮
+    }
+
+    function skipCurrentPhase() {
+        if (!isTrainingActive) {
+            addLog(`⚠️ 未开始训练，无法跳过`);
+            return;
+        }
+        if (currentPhaseIndex >= PHASES.length) {
+            addLog(`已完成所有阶段，无需跳过`);
+            return;
+        }
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = null;
+        isRunning = false;
+        addLog(`⏩ 跳过阶段: ${PHASES[currentPhaseIndex].name}`);
+        if (currentPhaseIndex + 1 < PHASES.length) {
+            currentPhaseIndex++;
+            timeLeft = PHASES[currentPhaseIndex].durationSec;
+            updateUI();
+            if (isTrainingActive) startTimerInternal();
+        } else {
+            isTrainingActive = false;
+            isRunning = false;
+            updateUI();
+            playAllCompleteAlert();
+            addLog(`🏁 跳过最后阶段，训练提前完成！`);
+            statusText.innerText = '🎉 完成训练';
+            releaseWakeLock();
+        }
+    }
+
+    function addLog(msg) {
+        const logDiv = document.createElement('div');
+        logDiv.className = 'log-line';
+        const timeStr = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+        logDiv.innerHTML = `[${timeStr}] ${msg}`;
+        logArea.appendChild(logDiv);
+        logArea.scrollTop = logArea.scrollHeight;
+        while (logArea.children.length > 40) logArea.removeChild(logArea.firstChild);
+    }
+
+    function formatTime(seconds) {
+        let m = Math.floor(seconds / 60);
+        let s = seconds % 60;
+        return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    }
+
+    // ==================== 事件绑定 & 初始化 ====================
+    startBtn.onclick = () => { startTraining(); };
+    pauseBtn.onclick = () => { pauseTraining(); };
+    resetBtn.onclick = () => { resetTraining(); };
+    skipBtn.onclick = () => { skipCurrentPhase(); };
+
+    // 点击任意按钮时激活音频（手机策略）
+    const allBtns = [startBtn, pauseBtn, resetBtn, skipBtn];
+    allBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        });
+    });
+
+    // 页面关闭时释放常亮
+    window.addEventListener('beforeunload', () => {
+        if (wakeLock) wakeLock.release();
+    });
+
+    updateUI();
+    addLog(`📋 计划加载完成: 复位练习 10min → 三目标 10min → 闪身枪 10min`);
+    if (Notification.permission === 'default') Notification.requestPermission();
+
+    // 提示用户：首次点击页面任意位置激活常亮授权（实际在开始训练时调用）
+    addLog(`💡 点击「开始」后屏幕将保持常亮，训练结束自动恢复`);
+</script>
+</body>
+</html>
